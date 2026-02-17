@@ -13,6 +13,20 @@ class CounterView extends StatefulWidget {
 
 class _CounterViewState extends State<CounterView> {
   final CounterController _controller = CounterController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    await _controller.loadData(widget.username);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,35 +34,40 @@ class _CounterViewState extends State<CounterView> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text("Logbook: ${widget.username}"),
         actions: [
-          IconButton(onPressed: () {
-          showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Konfirmasi Logout"),
-          content: const Text("Apakah Anda yakin? Data yang belum disimpan mungkin akan hilang."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Batal"),
-            ),
-            TextButton(
+          IconButton(
               onPressed: () {
-                Navigator.pop(context); 
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const OnboardingView()),
-                  (route) => false,
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Konfirmasi Logout"),
+                      content: const Text(
+                          "Apakah Anda yakin? Data yang belum disimpan mungkin akan hilang."),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Batal"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const OnboardingView()),
+                              (route) => false,
+                            );
+                          },
+                          child: const Text("Ya, Keluar",
+                              style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
-              child: const Text("Ya, Keluar", style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  },
-  icon: const Icon(Icons.logout))],
+              icon: const Icon(Icons.logout))
+        ],
       ),
       body: Center(
         child: Column(
