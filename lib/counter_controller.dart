@@ -19,6 +19,7 @@ class CounterController {
   void decrementCounter() {
     int before = _counter;
     if (_counter > 0) _counter -= _step;
+    if (_step > _counter) _counter = 0;
     _addLog("Mengurangi", before, _counter);
   }
 
@@ -29,13 +30,19 @@ class CounterController {
   }
 
   void setStep(int newStep) {
+    int before = _step;
     _step = newStep;
+    if (newStep < 0) _step = before;
   }
 
   void _addLog(String action, int from, int to) {
     String time =
         "${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}";
     _history.insert(0, "User $action dari $from ke $to di jam $time");
+
+    if (_history.length > 5){
+      _history.removeLast();
+    }
   }
 
   Color colorTile(String text) {
